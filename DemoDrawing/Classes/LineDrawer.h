@@ -82,7 +82,7 @@ public:
     //end khiem nguyen
     
     // vu ha
-    void menuSave(CCMenuItemToggle *_item);
+    void menuSave(CCMenuItemImage *_item);
     bool isShowMenu;
     // end vu ha
     
@@ -104,6 +104,11 @@ public:
     static cocos2d::CCScene* scene();
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(PopupMenu);
+    
+    // default implements are used to call script callback if exist
+    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    
+    void menuCallback(CCMenuItemFont *_item);
 };
 
 #endif /* defined(__DemoDrawing__LineDrawer__) */

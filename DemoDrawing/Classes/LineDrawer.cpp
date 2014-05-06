@@ -160,6 +160,8 @@ bool LineDrawer::init(){
     
     this->setTouchMode(kCCTouchesOneByOne);
     this->setTouchEnabled(true);
+    this->setTouchPriority(-127);
+    
     
     currentColor = ccc4f(ccBLUE4F.r/255.f, ccBLUE4F.g/255.f, ccBLUE4F.b/255.f, ccBLUE4F.a/255.f);
     currentRadius = RADIUS_MEDIUM;
@@ -256,17 +258,15 @@ bool LineDrawer::init(){
     btnSketch->setPosition( CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width*2, pCayco->getPosition().y) );
 //    this->addChild(btnSketch, 1);
     
-    CCMenuItemToggle *btnSave = CCMenuItemToggle::createWithTarget(this,
-                                                                     menu_selector(LineDrawer::menuSave),
-                                                                     CCMenuItemImage::create("Images/button save.png",
-                                                                                             NULL),
-                                                                     CCMenuItemImage::create("Images/button save - touch.png",
-                                                                                             NULL),NULL);
+    CCMenuItemImage *btnSave = CCMenuItemImage::create("Images/button save.png",
+                                                       "Images/button save - touch.png",
+                                                       this,
+                                                       menu_selector(LineDrawer::menuSave));
     btnSave->setPosition( CCPoint(btnSketch->getPositionX() - btnSave->getContentSize().width*2, btnSketch->getPosition().y) );
     
     CCMenu *menuSketchxxx = CCMenu::create(btnSketch, btnSave, NULL);
     menuSketchxxx->setPosition(CCPointZero);
-    this->addChild(menuSketchxxx);
+    this->addChild(menuSketchxxx,1);
     
     return true;
 }
@@ -811,13 +811,10 @@ void LineDrawer::zoomOut(){
     currentRadius = RADIUS_MEDIUM;
 }
 
-void LineDrawer::menuSave(cocos2d::CCMenuItemToggle *_item){
-    if (!isShowMenu) {
-        isShowMenu = true;
-        PopupMenu *menu = PopupMenu::create();
-        menu->setPosition(ccp(0, 0));
-        this->addChild(menu, 100);
-    }
+void LineDrawer::menuSave(cocos2d::CCMenuItemImage *_item){
+    PopupMenu *menu = PopupMenu::create();
+    menu->setPosition(ccp(0, 0));
+    this->addChild(menu, 100);
 }
 
 void LineDrawer::menuSketch(cocos2d::CCMenuItemToggle *_item){
@@ -856,31 +853,73 @@ bool PopupMenu::init(){
         return false;
     }
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    addChild(CCLayerColor::create(ccc4(122, 144, 0, 255), visibleSize.width, visibleSize.height));
+//    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+    addChild(CCLayerColor::create(ccc4(0, 0, 0, 75), visibleSize.width, visibleSize.height));
     
-    //this is the layer that we want to "cut"
-    CCLayer *layer = CCLayer::create();
-    CCSprite* pSprite = CCSprite::create("HelloWorld.png");
-    pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-    layer->addChild(pSprite, 0);
+    this->setTouchEnabled(true);
+    this->setTouchMode(kCCTouchesOneByOne);
+    this->setTouchPriority(-127);
     
-    //we need to create a ccnode, which will be a stencil for ccclipingnode, draw node is a good choice for that
-    CCDrawNode * stecil = CCDrawNode::create();
-    stecil->drawDot(ccp(visibleSize.width/2 + origin.x - 100, visibleSize.height/2 + origin.y), 30, ccc4f(0, 0, 0, 255));
-    stecil->drawSegment(ccp(0, 0), ccp(visibleSize.width, visibleSize.height), 20, ccc4f(0, 0, 0, 255));
+    CCMenuItem *photo = CCMenuItemFont::create("Save to Photo", this, menu_selector(PopupMenu::menuCallback));
+    photo->setPosition( CCPoint(visibleSize.width/2, visibleSize.height/2));
+    photo->setTag(1);
     
-    //CCClipingNode show the intersection of stencil and theirs children
-    CCClippingNode *cliper = CCClippingNode::create(stecil);
-    //you want to hide intersection so we setInverted to true
-    cliper->setInverted(true);
-    cliper->addChild(layer);
-    addChild(cliper);
+    CCMenuItem *facebook = CCMenuItemFont::create("Share in Facebook", this, menu_selector(PopupMenu::menuCallback));
+    facebook->setPosition( CCPoint(photo->getPositionX(), photo->getPositionY() - facebook->getContentSize().height));
+    facebook->setTag(2);
+    
+    CCMenuItem *tw = CCMenuItemFont::create("Share in Twitter", this, menu_selector(PopupMenu::menuCallback));
+    tw->setPosition( CCPoint(facebook->getPositionX(), facebook->getPositionY() - tw->getContentSize().height));
+    tw->setTag(3);
+    
+    CCMenuItem *plus = CCMenuItemFont::create("Share in Google Plus", this, menu_selector(PopupMenu::menuCallback));
+    plus->setPosition( CCPoint(tw->getPositionX(), tw->getPositionY() - plus->getContentSize().height));
+    plus->setTag(4);
+    
+    CCMenuItem *mail = CCMenuItemFont::create("Share in Mail", this, menu_selector(PopupMenu::menuCallback));
+    mail->setPosition( CCPoint(plus->getPositionX(),plus->getPositionY() - mail->getContentSize().height));
+    mail->setTag(5);
+    
+   
+    
+    CCMenu *menuSketchxxx = CCMenu::create(photo, facebook, tw, plus, mail, NULL);
+    menuSketchxxx->setPosition(CCPointZero);
+    this->addChild(menuSketchxxx);
     
     return true;
 }
 
+bool PopupMenu::ccTouchBegan(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent){
+    this->removeFromParentAndCleanup(true);
+    return true;
+}
 
+void PopupMenu::menuCallback(cocos2d::CCMenuItemFont *_item){
+    switch (_item->getTag()) {
+        case 1://photo
+            
+            break;
+            
+        case 2://facebook
+            
+            break;
+            
+        case 3://twitter
+            
+            break;
+            
+        case 4://plus
+            
+            break;
+            
+        case 5://email
+            
+            break;
+            
+        default:
+            break;
+    }
+}
 
 
 
