@@ -852,10 +852,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B6EC8DE18FE2F63001B04D6 /* OpenAL.framework in Frameworks */,
-				8B6ECA4E18FE2F67001B04D6 /* libwebp.a in Frameworks */,
-				8B6EC8E418FE2F63001B04D6 /* UIKit.framework in Frameworks */,
 				8B6ECA4C18FE2F67001B04D6 /* libcurl.a in Frameworks */,
+				8B6ECA4E18FE2F67001B04D6 /* libwebp.a in Frameworks */,
+				8B6EC8DE18FE2F63001B04D6 /* OpenAL.framework in Frameworks */,
+				8B6EC8E418FE2F63001B04D6 /* UIKit.framework in Frameworks */,
 				8B6EC8DA18FE2F63001B04D6 /* QuartzCore.framework in Frameworks */,
 				8B6EC8E218FE2F63001B04D6 /* AVFoundation.framework in Frameworks */,
 				8B6EC8E818FE2F63001B04D6 /* CoreGraphics.framework in Frameworks */,
@@ -868,6 +868,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B0DFE3919189B3F0004C7CB /* libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = libraries;
+			path = DemoDrawing/libs/cocos2dx/platform/third_party/ios/libraries;
+			sourceTree = "<group>";
+		};
 		8B6EC8CD18FE2F63001B04D6 = {
 			isa = PBXGroup;
 			children = (
@@ -888,6 +896,7 @@
 		8B6EC8D818FE2F63001B04D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B0DFE3919189B3F0004C7CB /* libraries */,
 				8B6EC8D918FE2F63001B04D6 /* QuartzCore.framework */,
 				8B6EC8DB18FE2F63001B04D6 /* OpenGLES.framework */,
 				8B6EC8DD18FE2F63001B04D6 /* OpenAL.framework */,

@@ -256,9 +256,17 @@ bool LineDrawer::init(){
     btnSketch->setPosition( CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width*2, pCayco->getPosition().y) );
 //    this->addChild(btnSketch, 1);
     
-    CCMenu *menuSketch = CCMenu::createWithItem(btnSketch);
-    menuSketch->setPosition(CCPointZero);
-    this->addChild(menuSketch);
+    CCMenuItemToggle *btnSave = CCMenuItemToggle::createWithTarget(this,
+                                                                     menu_selector(LineDrawer::menuSave),
+                                                                     CCMenuItemImage::create("Images/button save.png",
+                                                                                             NULL),
+                                                                     CCMenuItemImage::create("Images/button save - touch.png",
+                                                                                             NULL),NULL);
+    btnSave->setPosition( CCPoint(btnSketch->getPositionX() - btnSave->getContentSize().width*2, btnSketch->getPosition().y) );
+    
+    CCMenu *menuSketchxxx = CCMenu::create(btnSketch, btnSave, NULL);
+    menuSketchxxx->setPosition(CCPointZero);
+    this->addChild(menuSketchxxx);
     
     return true;
 }
@@ -364,10 +372,13 @@ void LineDrawer::drawLines(vector<LinePoint*> *linePoints, ccColor4F color){
         ccVertex2F dirNor   = ccVertex2FNormalize(ccVertex2FPerp(dir));
         ccVertex2F perpendicular = {dirNor.x ,dirNor.y};
         
-        ccVertex2F A = ccVertex2FAdd(prevPoint, ccVertex2FMult(perpendicular, prevValue / 2));
-        ccVertex2F B = ccVertex2FSub(prevPoint, ccVertex2FMult(perpendicular, prevValue / 2));
-        ccVertex2F C = ccVertex2FAdd(curPoint, ccVertex2FMult(perpendicular, curValue / 2));
-        ccVertex2F D = ccVertex2FSub(curPoint, ccVertex2FMult(perpendicular, curValue / 2));
+        ccVertex2F perMult = ccVertex2FMult(perpendicular, prevValue / 2);
+        ccVertex2F curMult = ccVertex2FMult(perpendicular, curValue / 2);
+        
+        ccVertex2F A = ccVertex2FAdd(prevPoint, perMult);
+        ccVertex2F B = ccVertex2FSub(prevPoint, perMult);
+        ccVertex2F C = ccVertex2FAdd(curPoint, curMult);
+        ccVertex2F D = ccVertex2FSub(curPoint, curMult);
         
         //! continuing line
         if (connectingLine || index > 0) {
@@ -393,10 +404,11 @@ void LineDrawer::drawLines(vector<LinePoint*> *linePoints, ccColor4F color){
         prevValue = curValue;
         
         //! Add overdraw
-        ccVertex2F F = ccVertex2FAdd(A, ccVertex2FMult(perpendicular, overdraw));
-        ccVertex2F G = ccVertex2FAdd(C, ccVertex2FMult(perpendicular, overdraw));
-        ccVertex2F H = ccVertex2FSub(B, ccVertex2FMult(perpendicular, overdraw));
-        ccVertex2F I = ccVertex2FSub(D, ccVertex2FMult(perpendicular, overdraw));
+        ccVertex2F overValue = ccVertex2FMult(perpendicular, overdraw);
+        ccVertex2F F = ccVertex2FAdd(A, overValue);
+        ccVertex2F G = ccVertex2FAdd(C, overValue);
+        ccVertex2F H = ccVertex2FSub(B, overValue);
+        ccVertex2F I = ccVertex2FSub(D, overValue);
         
         
         //! end vertices of last line are the start of this one, also for the overdraw
@@ -463,7 +475,6 @@ void LineDrawer::fillLineTriangles(LineVertex *vertices, int count, ccColor4F co
     glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, sizeof(LineVertex), &vertices[0].color);
     
     if (currentColor.a == 0) {
-//        glEnable(GL_BLEND);
         glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA );
     }
     else{
@@ -486,7 +497,7 @@ void LineDrawer::fillLineTriangles(LineVertex *vertices, int count, ccColor4F co
 }
 
 void LineDrawer::fillLineEndPointAt(ccVertex2F center, ccVertex2F aLineDir, GLfloat radius, ccColor4F color){
-//    CCLog("fillLineEndPointAt: %f,%f -- %f,%f -- %f", center.x, center.y, aLineDir.x, aLineDir.y, radi);
+
     int numberOfSegments = 32;
     LineVertex *vertices = (LineVertex*)malloc(sizeof(LineVertex) * numberOfSegments * 9);
     float anglePerSegment = (float)(M_PI / (numberOfSegments - 1));
@@ -542,7 +553,7 @@ void LineDrawer::fillLineEndPointAt(ccVertex2F center, ccVertex2F aLineDir, GLfl
 
 
 void LineDrawer::draw(){
-    CCLog("%f,%f,%f,%f", currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+//    CCLog("%f,%f,%f,%f", currentColor.r, currentColor.g, currentColor.b, currentColor.a);
     
     ccColor4F color;
     
@@ -557,7 +568,6 @@ void LineDrawer::draw(){
     vector<LinePoint*> *smoothedPoints = new vector<LinePoint*>();
     smoothedPoints = this->calculateSmoothLinePoints();
     if (smoothedPoints) {
-        
         this->drawLines(smoothedPoints, color);
     }
     renderTexture->end();
@@ -590,7 +600,7 @@ void LineDrawer::ccTouchMoved(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent
         GLfloat length = ccVertex2FLength(ccVertex2FSub(lastPoint1, pos1));
         
         if (length < eps) {
-            CCLOG("return");
+//            CCLOG("return");
             return;
         }
     }
@@ -796,19 +806,96 @@ void LineDrawer::zoomInWithTag(int _tag){
 }
 
 void LineDrawer::zoomOut(){
-    
     scrollView->stopAllActions();
     scrollView->runAction(CCSpawn::create(CCScaleTo::create(0.5, 1),CCMoveTo::create(0.5, ccp(0, 0)),NULL));
     currentRadius = RADIUS_MEDIUM;
+}
+
+void LineDrawer::menuSave(cocos2d::CCMenuItemToggle *_item){
+    if (!isShowMenu) {
+        isShowMenu = true;
+        PopupMenu *menu = PopupMenu::create();
+        menu->setPosition(ccp(0, 0));
+        this->addChild(menu, 100);
+    }
 }
 
 void LineDrawer::menuSketch(cocos2d::CCMenuItemToggle *_item){
     if (_item->getSelectedIndex() == 1) {
         sprite2->stopAllActions();
         sprite2->runAction(CCFadeOut::create(0.5f));
-    }
-    else{
+    }else{
         sprite2->stopAllActions();
         sprite2->runAction(CCFadeIn::create(0.5f));
     }
 }
+
+
+
+#pragma mark ----------------- PopupMenu ---------------------
+
+PopupMenu::PopupMenu(){
+    
+}
+
+PopupMenu::~PopupMenu(){
+    
+}
+
+CCScene* PopupMenu::scene()
+{
+    CCScene *scene = CCScene::create();
+    PopupMenu *layer = PopupMenu::create();
+    scene->addChild(layer);
+    return scene;
+}
+
+
+bool PopupMenu::init(){
+    if (!CCLayer::init()) {
+        return false;
+    }
+    CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+    addChild(CCLayerColor::create(ccc4(122, 144, 0, 255), visibleSize.width, visibleSize.height));
+    
+    //this is the layer that we want to "cut"
+    CCLayer *layer = CCLayer::create();
+    CCSprite* pSprite = CCSprite::create("HelloWorld.png");
+    pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    layer->addChild(pSprite, 0);
+    
+    //we need to create a ccnode, which will be a stencil for ccclipingnode, draw node is a good choice for that
+    CCDrawNode * stecil = CCDrawNode::create();
+    stecil->drawDot(ccp(visibleSize.width/2 + origin.x - 100, visibleSize.height/2 + origin.y), 30, ccc4f(0, 0, 0, 255));
+    stecil->drawSegment(ccp(0, 0), ccp(visibleSize.width, visibleSize.height), 20, ccc4f(0, 0, 0, 255));
+    
+    //CCClipingNode show the intersection of stencil and theirs children
+    CCClippingNode *cliper = CCClippingNode::create(stecil);
+    //you want to hide intersection so we setInverted to true
+    cliper->setInverted(true);
+    cliper->addChild(layer);
+    addChild(cliper);
+    
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

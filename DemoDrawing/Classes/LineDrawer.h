@@ -81,10 +81,29 @@ public:
     void menuSketch(CCMenuItemToggle *_item);
     //end khiem nguyen
     
+    // vu ha
+    void menuSave(CCMenuItemToggle *_item);
+    bool isShowMenu;
+    // end vu ha
+    
     void setColor(ccColor4F _color);
     
     virtual void draw();
 };
 
+
+class PopupMenu:public CCLayer {
+    
+public:
+    PopupMenu();
+    ~PopupMenu();
+    
+    virtual bool init();
+    
+    // there's no 'id' in cpp, so we recommend to return the class instance pointer
+    static cocos2d::CCScene* scene();
+    // preprocessor macro for "static create()" constructor ( node() deprecated )
+    CREATE_FUNC(PopupMenu);
+};
 
 #endif /* defined(__DemoDrawing__LineDrawer__) */
