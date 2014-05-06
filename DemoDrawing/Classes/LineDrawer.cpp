@@ -138,14 +138,13 @@ bool LineDrawer::init(){
     scrollView->setTouchEnabled(false);
     addChild(scrollView,0);
     
-    this->createMenuZoom();
     // end khiem nguyen
     
     CCSprite *sprite1 = CCSprite::create("Images/drawing_original_1.png");
     sprite1->setPosition(ccp(0,0));
     scrollView->addChild(sprite1, Z_INDEX_1);
     
-    CCSprite *sprite2 = CCSprite::create("Images/drawing_sketch_1.png");
+    sprite2 = CCSprite::create("Images/drawing_sketch_1.png");
     sprite2->setPosition(ccp(0,0));
     scrollView->addChild(sprite2, Z_INDEX_3);
     
@@ -161,16 +160,6 @@ bool LineDrawer::init(){
     
     this->setTouchMode(kCCTouchesOneByOne);
     this->setTouchEnabled(true);
-    
-    
-//    CCPoint pos1 = CCPointMake(100, 100);
-//    GLfloat size = 15.0f;
-//    this->startNewLineFrom(pos1, size);
-//    this->addPoint(pos1, size);
-//    this->addPoint(pos1, size);
-    
-//    CCPoint pos2 = CCPointMake(100, 150);
-//    this->endLineAt(pos2, size);
     
     currentColor = ccc4f(ccBLUE4F.r/255.f, ccBLUE4F.g/255.f, ccBLUE4F.b/255.f, ccBLUE4F.a/255.f);
     currentRadius = RADIUS_MEDIUM;
@@ -254,6 +243,22 @@ bool LineDrawer::init(){
     CCMenu* pMenu = CCMenu::create(pGreen, pYellow, pBrown, pRed, pPurple, pBluePurple, pBlue, pWhite, pCayco, NULL);
     pMenu->setPosition( CCPointZero );
     this->addChild(pMenu, 1);
+    
+    this->createMenuZoom(CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width, pCayco->getPosition().y));
+    
+    //create menu show/hide sketch
+    CCMenuItemToggle *btnSketch = CCMenuItemToggle::createWithTarget(this,
+                                                                     menu_selector(LineDrawer::menuSketch),
+                                                                     CCMenuItemImage::create("Images/button bo net.png",
+                                                                                             NULL),
+                                                                     CCMenuItemImage::create("Images/button bo net - touch.png",
+                                                                                             NULL),NULL);
+    btnSketch->setPosition( CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width*2, pCayco->getPosition().y) );
+//    this->addChild(btnSketch, 1);
+    
+    CCMenu *menuSketch = CCMenu::createWithItem(btnSketch);
+    menuSketch->setPosition(CCPointZero);
+    this->addChild(menuSketch);
     
     return true;
 }
@@ -466,7 +471,6 @@ void LineDrawer::fillLineTriangles(LineVertex *vertices, int count, ccColor4F co
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     }
     
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)count);
     
@@ -564,11 +568,11 @@ bool LineDrawer::ccTouchBegan(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent
     pos =scrollView->convertToNodeSpace(pos);
     
     points->erase(points->begin(), points->end());
-    GLfloat size = RADIUS_LARGE;
-    this->startNewLineFrom(pos, currentRadius);
+    GLfloat size = currentRadius;
+    this->startNewLineFrom(pos, size);
     
-    this->addPoint(pos, currentRadius);
-    this->addPoint(pos, currentRadius);
+    this->addPoint(pos, size);
+    this->addPoint(pos, size);
     
     return true;
 }
@@ -591,7 +595,6 @@ void LineDrawer::ccTouchMoved(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent
         }
     }
     
-    GLfloat size = RADIUS_LARGE;
     this->addPoint(pos, currentRadius);
 }
 
@@ -685,9 +688,9 @@ void LineDrawer::setColor(ccColor4F _color){
     currentColor = ccc4f(_color.r/255.f,_color.g/255.f,_color.b/255.f,_color.a/255.f);
 }
 
-void LineDrawer::createMenuZoom(){
+void LineDrawer::createMenuZoom(CCPoint _posMenu){
     CCSprite *sprite3 = CCSprite::create("Images/btnDrawing/Drawing Buttons 50%/button zoom 0.png");
-    sprite3->setPosition(ccp(240, sprite3->getContentSize().height / 2));
+    sprite3->setPosition(_posMenu);
     addChild(sprite3,Z_INDEX_3);
     
     CCMenuItemToggle *btnBottomLeft = CCMenuItemToggle::createWithTarget(this,
@@ -737,7 +740,7 @@ void LineDrawer::createMenuZoom(){
 }
 
 void LineDrawer::menuZoom(CCMenuItemToggle *_item){
-    printf("zoom\n");
+
     CCObject *object;
     CCARRAY_FOREACH(arrayMenuItem, object){
         CCMenuItemToggle *itemToggle = (CCMenuItemToggle*)object;
@@ -788,12 +791,7 @@ void LineDrawer::zoomInWithTag(int _tag){
     
     scrollView->stopAllActions();
     scrollView->runAction(CCSpawn::create(CCScaleTo::create(0.5, 1.8),CCMoveTo::create(0.5, newPos),NULL));
-    //    xxx->initWithFile("Circle_Half.png");
-    //    CCTexture2D *xxxx =  xxx->getTexture();
-    //    xxxx->setAntiAliasTexParameters();
-    //    this->setBrushRadius(RADIUS_SMALL);
-    //    brushBorder->setScale(0.5f);
-    //    brushFull->setScale(0.5f);
+
     currentRadius = RADIUS_SMALL;
 }
 
@@ -804,3 +802,13 @@ void LineDrawer::zoomOut(){
     currentRadius = RADIUS_MEDIUM;
 }
 
+void LineDrawer::menuSketch(cocos2d::CCMenuItemToggle *_item){
+    if (_item->getSelectedIndex() == 1) {
+        sprite2->stopAllActions();
+        sprite2->runAction(CCFadeOut::create(0.5f));
+    }
+    else{
+        sprite2->stopAllActions();
+        sprite2->runAction(CCFadeIn::create(0.5f));
+    }
+}

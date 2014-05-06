@@ -73,7 +73,7 @@ public:
     CCMenu *menuZoomImage;
     CCScrollView *scrollView;
     
-    void createMenuZoom();
+    void createMenuZoom(CCPoint _posMenu);
     void menuCloseCallback(CCObject* pSender);
     void menuZoom(CCMenuItemToggle *_item);
     void zoomInWithTag(int _tag);

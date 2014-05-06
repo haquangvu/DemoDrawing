@@ -270,8 +270,6 @@
 		8B6ECC4718FE2F6A001B04D6 /* cpVect.c in Sources */ = {isa = PBXBuildFile; fileRef = 8B6ECC4618FE2F6A001B04D6 /* cpVect.c */; };
 		8B6ECC4E18FE2F6A001B04D6 /* AppDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B6ECC4D18FE2F6A001B04D6 /* AppDelegate.cpp */; };
 		8B6ECC5118FE2F6A001B04D6 /* HelloWorldScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B6ECC5018FE2F6A001B04D6 /* HelloWorldScene.cpp */; };
-		8B6ECC5C18FE3280001B04D6 /* DrawLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B6ECC5A18FE3280001B04D6 /* DrawLayer.cpp */; };
-		8B6ECC5F18FE32D6001B04D6 /* CircleSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B6ECC5D18FE32D6001B04D6 /* CircleSprite.cpp */; };
 		8B6ECC6118FE351C001B04D6 /* Images in Resources */ = {isa = PBXBuildFile; fileRef = 8B6ECC6018FE351C001B04D6 /* Images */; };
 /* End PBXBuildFile section */
 
@@ -846,10 +844,6 @@
 		8B6ECC4D18FE2F6A001B04D6 /* AppDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppDelegate.cpp; path = Classes/AppDelegate.cpp; sourceTree = "<group>"; };
 		8B6ECC4F18FE2F6A001B04D6 /* HelloWorldScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HelloWorldScene.h; path = Classes/HelloWorldScene.h; sourceTree = "<group>"; };
 		8B6ECC5018FE2F6A001B04D6 /* HelloWorldScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = HelloWorldScene.cpp; path = Classes/HelloWorldScene.cpp; sourceTree = "<group>"; };
-		8B6ECC5A18FE3280001B04D6 /* DrawLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DrawLayer.cpp; sourceTree = "<group>"; };
-		8B6ECC5B18FE3280001B04D6 /* DrawLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawLayer.h; sourceTree = "<group>"; };
-		8B6ECC5D18FE32D6001B04D6 /* CircleSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CircleSprite.cpp; sourceTree = "<group>"; };
-		8B6ECC5E18FE32D6001B04D6 /* CircleSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleSprite.h; sourceTree = "<group>"; };
 		8B6ECC6018FE351C001B04D6 /* Images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Images; path = Resources/Images; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2003,10 +1997,6 @@
 				8B0B5C7B190F9E87007447AF /* LineDrawer.h */,
 				8B0B5C7C190F9E87007447AF /* LinePoint.cpp */,
 				8B0B5C7D190F9E87007447AF /* LinePoint.h */,
-				8B6ECC5E18FE32D6001B04D6 /* CircleSprite.h */,
-				8B6ECC5D18FE32D6001B04D6 /* CircleSprite.cpp */,
-				8B6ECC5B18FE3280001B04D6 /* DrawLayer.h */,
-				8B6ECC5A18FE3280001B04D6 /* DrawLayer.cpp */,
 				8B6ECC4C18FE2F6A001B04D6 /* AppDelegate.h */,
 				8B6ECC4F18FE2F6A001B04D6 /* HelloWorldScene.h */,
 				8B6ECC5018FE2F6A001B04D6 /* HelloWorldScene.cpp */,
@@ -2161,7 +2151,6 @@
 				8B6EC9C318FE2F65001B04D6 /* CCLabelBMFont.cpp in Sources */,
 				8B6ECB2518FE2F69001B04D6 /* CCControlButtonLoader.cpp in Sources */,
 				8B6ECC3918FE2F6A001B04D6 /* cpSpace.c in Sources */,
-				8B6ECC5F18FE32D6001B04D6 /* CircleSprite.cpp in Sources */,
 				8B6EC9DA18FE2F66001B04D6 /* CCMenu.cpp in Sources */,
 				8B6ECAB418FE2F68001B04D6 /* ioapi.cpp in Sources */,
 				8B6ECB6818FE2F69001B04D6 /* CCControlHuePicker.cpp in Sources */,
@@ -2214,7 +2203,6 @@
 				8B6ECA8218FE2F67001B04D6 /* CCSpriteFrame.cpp in Sources */,
 				8B6ECB0A18FE2F68001B04D6 /* AssetsManager.cpp in Sources */,
 				8B6ECC1118FE2F6A001B04D6 /* cpConstraint.c in Sources */,
-				8B6ECC5C18FE3280001B04D6 /* DrawLayer.cpp in Sources */,
 				8B6EC93D18FE2F64001B04D6 /* CCCamera.cpp in Sources */,
 				8B6ECC4718FE2F6A001B04D6 /* cpVect.c in Sources */,
 				8B6ECA2818FE2F66001B04D6 /* CCFileUtilsIOS.mm in Sources */,
