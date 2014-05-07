@@ -27,6 +27,7 @@ class LineDrawer:public CCLayer {
     
     vector<LinePoint*> *smoothedPoints;
     
+    CCSprite *sprite1;
     CCSprite *sprite2;
     
     float overdraw;
@@ -71,6 +72,8 @@ public:
     // khiem nguyen
     CCArray  *arrayMenuItem;
     CCMenu *menuZoomImage;
+    CCMenu* pMenuColor;
+    CCMenu *menuSketchxxx;
     CCScrollView *scrollView;
     
     void createMenuZoom(CCPoint _posMenu);
@@ -83,16 +86,21 @@ public:
     
     // vu ha
     void menuSave(CCMenuItemImage *_item);
+    void removeMenuCallback();
     bool isShowMenu;
     // end vu ha
     
     void setColor(ccColor4F _color);
     
     virtual void draw();
+    virtual void onEnter();
+    virtual void onExit();
+    
+    void takeScreenShot();
 };
 
 
-class PopupMenu:public CCLayer {
+class PopupMenu:public CCNode, public CCTargetedTouchDelegate {
     
 public:
     PopupMenu();
@@ -105,10 +113,15 @@ public:
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(PopupMenu);
     
-    // default implements are used to call script callback if exist
     virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
     
     void menuCallback(CCMenuItemFont *_item);
+    
+    virtual void onEnter();
+    virtual void onExit();
 };
 
 #endif /* defined(__DemoDrawing__LineDrawer__) */

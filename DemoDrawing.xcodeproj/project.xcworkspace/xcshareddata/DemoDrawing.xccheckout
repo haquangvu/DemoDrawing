@@ -5,11 +5,13 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>1BA88EF1-8E6A-448B-A37B-1FEB6C2CF3F1</string>
+	<string>A76AE6BB-9819-45C4-9BA5-744D97616C8A</string>
 	<key>IDESourceControlProjectName</key>
 	<string>DemoDrawing</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>44721AE3-56E0-4FC8-9D61-4358EACD9829</key>
+		<string>https://github.com/haquangvu/DemoDrawing.git</string>
 		<key>DE7A664D-CC75-46C4-9E9B-FDCD4D4A9870</key>
 		<string>svn://192.168.50.105/var/svn/POPSKids</string>
 	</dict>
@@ -17,6 +19,8 @@
 	<string>DemoDrawing/DemoDrawing.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>44721AE3-56E0-4FC8-9D61-4358EACD9829</key>
+		<string>../..</string>
 		<key>DE7A664D-CC75-46C4-9E9B-FDCD4D4A9870</key>
 		<string>../../..</string>
 	</dict>
@@ -26,13 +30,21 @@
 		<string>svn://192.168.50.105/var/svn/POPSKids</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>svn://192.168.50.105/var/svn/POPSKids/DemoDrawing/DemoDrawing.xcodeproj</string>
+	<string>https://github.com/haquangvu/DemoDrawing.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
 	<string>DE7A664D-CC75-46C4-9E9B-FDCD4D4A9870</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>44721AE3-56E0-4FC8-9D61-4358EACD9829</string>
+			<key>IDESourceControlWCCName</key>
+			<string>DemoDrawing</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>

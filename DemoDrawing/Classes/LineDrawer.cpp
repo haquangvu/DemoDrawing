@@ -24,6 +24,12 @@
 #define WHITE       7
 #define CAYCO       8
 
+//defaut priority of menu is -128
+#define TOUCH_PRIORITY_MAIN     1
+#define TOUCH_PRIORITY_MENU     0
+
+#define MENU_TAG            999
+
 enum TYPE_ZOOM { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
 
 GLfloat ccVertex2FDot(const ccVertex2F& v1, const ccVertex2F& v2)
@@ -118,6 +124,15 @@ LineDrawer::~LineDrawer(){
     delete circlesPoints;
 }
 
+void LineDrawer::onEnter(){
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, TOUCH_PRIORITY_MAIN, true);
+    CCLayer::onEnter();
+}
+
+void LineDrawer::onExit(){
+    CCDirector::sharedDirector()->getTouchDispatcher()->removeAllDelegates();
+    CCLayer::onExit();
+}
 
 bool LineDrawer::init(){
     if (!CCLayer::init()) {
@@ -140,7 +155,7 @@ bool LineDrawer::init(){
     
     // end khiem nguyen
     
-    CCSprite *sprite1 = CCSprite::create("Images/drawing_original_1.png");
+    sprite1 = CCSprite::create("Images/drawing_original_1.png");
     sprite1->setPosition(ccp(0,0));
     scrollView->addChild(sprite1, Z_INDEX_1);
     
@@ -157,11 +172,6 @@ bool LineDrawer::init(){
     renderTexture->clear(1.0f, 1.0f, 1.0f, 1.0f);
     scrollView->addChild(renderTexture, Z_INDEX_2);
     renderTexture->release();
-    
-    this->setTouchMode(kCCTouchesOneByOne);
-    this->setTouchEnabled(true);
-    this->setTouchPriority(-127);
-    
     
     currentColor = ccc4f(ccBLUE4F.r/255.f, ccBLUE4F.g/255.f, ccBLUE4F.b/255.f, ccBLUE4F.a/255.f);
     currentRadius = RADIUS_MEDIUM;
@@ -242,9 +252,9 @@ bool LineDrawer::init(){
     pCayco->setTag(CAYCO);
     
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pGreen, pYellow, pBrown, pRed, pPurple, pBluePurple, pBlue, pWhite, pCayco, NULL);
-    pMenu->setPosition( CCPointZero );
-    this->addChild(pMenu, 1);
+    pMenuColor = CCMenu::create(pGreen, pYellow, pBrown, pRed, pPurple, pBluePurple, pBlue, pWhite, pCayco, NULL);
+    pMenuColor->setPosition( CCPointZero );
+    this->addChild(pMenuColor, 1);
     
     this->createMenuZoom(CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width, pCayco->getPosition().y));
     
@@ -256,7 +266,6 @@ bool LineDrawer::init(){
                                                                      CCMenuItemImage::create("Images/button bo net - touch.png",
                                                                                              NULL),NULL);
     btnSketch->setPosition( CCPoint(pCayco->getPositionX() - pCayco->getContentSize().width*2, pCayco->getPosition().y) );
-//    this->addChild(btnSketch, 1);
     
     CCMenuItemImage *btnSave = CCMenuItemImage::create("Images/button save.png",
                                                        "Images/button save - touch.png",
@@ -264,7 +273,7 @@ bool LineDrawer::init(){
                                                        menu_selector(LineDrawer::menuSave));
     btnSave->setPosition( CCPoint(btnSketch->getPositionX() - btnSave->getContentSize().width*2, btnSketch->getPosition().y) );
     
-    CCMenu *menuSketchxxx = CCMenu::create(btnSketch, btnSave, NULL);
+    menuSketchxxx = CCMenu::create(btnSketch, btnSave, NULL);
     menuSketchxxx->setPosition(CCPointZero);
     this->addChild(menuSketchxxx,1);
     
@@ -812,9 +821,48 @@ void LineDrawer::zoomOut(){
 }
 
 void LineDrawer::menuSave(cocos2d::CCMenuItemImage *_item){
-    PopupMenu *menu = PopupMenu::create();
-    menu->setPosition(ccp(0, 0));
-    this->addChild(menu, 100);
+//    if (!isShowMenu) {
+//        isShowMenu = true;
+//        PopupMenu *menu = PopupMenu::create();
+//        menu->setPosition(ccp(0, 0));
+//        this->addChild(menu, 100, MENU_TAG);
+//        
+//        CCObject *item;
+//        CCARRAY_FOREACH(menuZoomImage->getChildren(), item){
+//            CCMenuItem *i = (CCMenuItem*)item;
+//            i->setEnabled(false);
+//        }
+//        CCARRAY_FOREACH(pMenuColor->getChildren(), item){
+//            CCMenuItem *i = (CCMenuItem*)item;
+//            i->setEnabled(false);
+//        }
+//        CCARRAY_FOREACH(menuSketchxxx->getChildren(), item){
+//            CCMenuItem *i = (CCMenuItem*)item;
+//            i->setEnabled(false);
+//        }
+//    }
+    takeScreenShot();
+}
+
+void LineDrawer::removeMenuCallback(){
+    isShowMenu = false;
+    PopupMenu *popup = (PopupMenu*)this->getChildByTag(MENU_TAG);
+    if (popup) {
+        popup->removeFromParentAndCleanup(true);
+        CCObject *item;
+        CCARRAY_FOREACH(menuZoomImage->getChildren(), item){
+            CCMenuItem *i = (CCMenuItem*)item;
+            i->setEnabled(true);
+        }
+        CCARRAY_FOREACH(pMenuColor->getChildren(), item){
+            CCMenuItem *i = (CCMenuItem*)item;
+            i->setEnabled(true);
+        }
+        CCARRAY_FOREACH(menuSketchxxx->getChildren(), item){
+            CCMenuItem *i = (CCMenuItem*)item;
+            i->setEnabled(true);
+        }
+    }
 }
 
 void LineDrawer::menuSketch(cocos2d::CCMenuItemToggle *_item){
@@ -825,6 +873,38 @@ void LineDrawer::menuSketch(cocos2d::CCMenuItemToggle *_item){
         sprite2->stopAllActions();
         sprite2->runAction(CCFadeIn::create(0.5f));
     }
+}
+
+bool replace_file(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+void LineDrawer::takeScreenShot(){
+    //create a render texture to hold our images
+    CCRenderTexture* rtx = CCRenderTexture::create(winSize.width, winSize.height, kCCTexture2DPixelFormat_RGBA8888);
+
+    rtx->begin();// open the texture
+    sprite1->visit();
+    renderTexture->visit();
+    sprite2->visit();
+    rtx->end();//close the texture
+    
+    std::string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("Images/button back.png");
+    CCLog("%s", path.c_str());
+    
+    replace_file(path, "DemoDrawing.app/Images/button back.png", "Documents/xxx.png");
+    
+    bool flag = rtx->saveToFile(path.c_str());
+    if (flag) {
+        CCLog("true");
+    } else {
+        CCLog("flase");
+    }
+    
 }
 
 
@@ -849,16 +929,14 @@ CCScene* PopupMenu::scene()
 
 
 bool PopupMenu::init(){
-    if (!CCLayer::init()) {
+    if (!CCNode::init()) {
         return false;
     }
-    CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-//    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    addChild(CCLayerColor::create(ccc4(0, 0, 0, 75), visibleSize.width, visibleSize.height));
     
-    this->setTouchEnabled(true);
-    this->setTouchMode(kCCTouchesOneByOne);
-    this->setTouchPriority(-127);
+//    this->setTouchPriority(2);
+    
+    CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+    addChild(CCLayerColor::create(ccc4(0, 0, 0, 75), visibleSize.width, visibleSize.height));
     
     CCMenuItem *photo = CCMenuItemFont::create("Save to Photo", this, menu_selector(PopupMenu::menuCallback));
     photo->setPosition( CCPoint(visibleSize.width/2, visibleSize.height/2));
@@ -880,18 +958,32 @@ bool PopupMenu::init(){
     mail->setPosition( CCPoint(plus->getPositionX(),plus->getPositionY() - mail->getContentSize().height));
     mail->setTag(5);
     
-   
-    
     CCMenu *menuSketchxxx = CCMenu::create(photo, facebook, tw, plus, mail, NULL);
     menuSketchxxx->setPosition(CCPointZero);
     this->addChild(menuSketchxxx);
+    
     
     return true;
 }
 
 bool PopupMenu::ccTouchBegan(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent){
-    this->removeFromParentAndCleanup(true);
+    
+    LineDrawer *parent = (LineDrawer*)this->getParent();
+    parent->removeMenuCallback();
+    
     return true;
+}
+
+void PopupMenu::ccTouchMoved(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent){
+    
+}
+
+void PopupMenu::ccTouchEnded(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent){
+    
+}
+
+void PopupMenu::ccTouchCancelled(cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent){
+    
 }
 
 void PopupMenu::menuCallback(cocos2d::CCMenuItemFont *_item){
@@ -921,7 +1013,15 @@ void PopupMenu::menuCallback(cocos2d::CCMenuItemFont *_item){
     }
 }
 
+void PopupMenu::onEnter(){
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, TOUCH_PRIORITY_MENU, true);
+    CCNode::onEnter();
+}
 
+void PopupMenu::onExit(){
+    CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
+    CCNode::onExit();
+}
 
 
 
